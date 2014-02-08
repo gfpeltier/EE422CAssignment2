@@ -1,3 +1,1 @@
-This is a test.
-now it is slightly different....
-a little more.t
+This repository holds the java files for Assignment2 for EE422C Spring 2014
