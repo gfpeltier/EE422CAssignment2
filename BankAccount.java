@@ -29,19 +29,19 @@ class BankAccount
      * Contains character code for type of account [checking(C), savings(S), auto(A), student(L)]
      */
     
-    protected char accountType;
+    protected String accountType;
 
     
 //constructors
     public BankAccount(){
     	balance = 0;
-    	accountType = 0;
+    	accountType = null;
     }
     /**
      * Create an account with an initial balance.
      * @param initialBalance     The initial balance of the account
      */
-    public BankAccount(double initialBalance, char type)
+    public BankAccount(double initialBalance, String type)
     {
         balance = initialBalance;
         accountType = type;
@@ -53,7 +53,7 @@ class BankAccount
      * @param owner              The owner of the account
      * @param initBalance        The initial balance of the account
      */
-    public BankAccount(int acct, Customer owner, double initBalance, char type)
+    public BankAccount(int acct, Customer owner, double initBalance, String type)
     {
         accountNumber = acct;
         ownersName = owner;
@@ -138,5 +138,9 @@ class BankAccount
     public void setOwner(Customer newOwner )
     {
         ownersName = newOwner;
+    }
+    
+    public String getType(){
+    	return accountType;
     }
 }

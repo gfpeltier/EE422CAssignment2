@@ -1,6 +1,8 @@
 package assignment2;
 
 public class Customer {
+	public final static int NUMACCTS = 4; 	// Number of accounts every Customer owns
+	
 	protected String name;
 	protected int number;
 	protected String address;
@@ -11,7 +13,7 @@ public class Customer {
 		name = new String();
 		number = -1;
 		address = new String();
-		accounts = new BankAccount[4];
+		accounts = new BankAccount[NUMACCTS];
 	}
 	
 	public Customer(String person, int id, String add, BankAccount[] accts){		// Constructor with all fields provided
@@ -51,7 +53,12 @@ public class Customer {
 		accounts = accts;
 	}
 	
-	public void locateAccount(String type){
-		
+	public BankAccount locateAccount(String type){
+		for(int k = 0; k < NUMACCTS; k++){
+			if((accounts[k].getType()).equals(type)){
+				return accounts[k];
+			}
+		}
+		return null;
 	}
 }
