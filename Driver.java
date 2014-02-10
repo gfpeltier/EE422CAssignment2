@@ -74,9 +74,5 @@ public class Driver {
 		custDB[0].updateAccounts(custAccounts1);
 		custDB[1].updateAccounts(custAccounts2);
 	}
-	
-	public static void custAccountInit(Customer[] db){
-		
-	}
 
 }
