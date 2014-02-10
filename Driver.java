@@ -13,10 +13,19 @@ public class Driver {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		boolean isDone = false;
 		Customer[] custDB = new Customer[NUMCUST];
-		customerInit(custDB);											//Issue within customerInit() method. java.lang.NullPointerException
+		customerInit(custDB);											
+		while(isDone == false){
 		String input = new String(receiveTransaction());
-		
+		if(input.indexOf("G") != -1){									// Terminate after output if G transaction code is offered
+			isDone = true;
+		}
+		String output = new String(executeTransaction(input));
+		if(!output.isEmpty()){
+			JOptionPane.showMessageDialog(null, output);
+			}
+		}
 	}
 	
 	public static String receiveTransaction(){
@@ -54,8 +63,9 @@ public class Driver {
 		return acc;
 	}
 	
-	public static void executeTransaction(){
-		
+	public static String executeTransaction(String in){
+		String out = new String();
+		return out;
 	}
 	
 	public static void customerInit(Customer[] custDB){
