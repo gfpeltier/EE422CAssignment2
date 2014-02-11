@@ -47,6 +47,11 @@ public class Driver {
 	public static String receiveTransaction(Customer[] data){
 		String output = new String();
 		String custNum = new String(JOptionPane.showInputDialog("Input Customer Number"));
+		if(custNum.charAt(0) < '1' || custNum.charAt(0) > '9'){
+			JOptionPane.showMessageDialog(null, "Invalid Customer Number","Error",JOptionPane.ERROR_MESSAGE);
+			output = receiveTransaction(data);
+			return output;
+		}
 		int check = Integer.parseInt(custNum);
 		if(check < 0 || check > NUMCUST){				// Check that customer number is valid
 			JOptionPane.showMessageDialog(null, "Invalid Customer Number","Error",JOptionPane.ERROR_MESSAGE);
