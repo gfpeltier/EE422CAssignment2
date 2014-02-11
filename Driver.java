@@ -3,7 +3,13 @@ package assignment2;
 import javax.swing.JOptionPane;
 
 
-
+/**
+ * Driver class intended to implement Customer and BankAccount classes. 
+ * Handles any actual transactions and errors.
+ * 
+ * @author Grant Peltier & John Nelson
+ *
+ */
 public class Driver {
 	
 	public final static int NUMCUST = 2;		// Number of customers in database
@@ -11,60 +17,64 @@ public class Driver {
 	public final static int CUSTOFF = 0;		// Offset for customer ID number in input string
 
 	/**
+	 * Main method for the entire program. Sets a boolean check and iterates through loop
+	 * of completing transactions until boolean is set to true.
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		boolean isDone = false;
 		Customer[] custDB = new Customer[NUMCUST];
 		customerInit(custDB);											
-		while(isDone == false){
+		while(isDone == false){					// Boolean check to control main loop iterations
 		String output = new String(receiveTransaction(custDB));
-		JOptionPane.showMessageDialog(null, output);
+		JOptionPane.showMessageDialog(null, output);		// Display message from completed transaction
 		String keepGoing = JOptionPane.showInputDialog("Would you like to do another transaction? (Y/N)");
 		if(keepGoing.indexOf("N") != -1 || keepGoing.indexOf("n") != -1){
-			isDone = true;
+			isDone = true;						// If no more transactions, change boolean to true and exit
 			}
 		}
 		displaySummaries(custDB);
 	}
 	
 	/**
-	 * 
+	 * Primary data gathering method of program. Gathers transaction input in separate chunks
+	 * and passes along vital data to respective transaction methods. Also checks and 
+	 * handles errors with transaction codes and invalid customer numbers.
 	 * @param data
-	 * @return
+	 * @return message to be put out by the transaction that was completed
 	 */
 	
 	public static String receiveTransaction(Customer[] data){
 		String output = new String();
 		String custNum = new String(JOptionPane.showInputDialog("Input Customer Number"));
 		int check = Integer.parseInt(custNum);
-		if(check < 0 || check > NUMCUST){
+		if(check < 0 || check > NUMCUST){				// Check that customer number is valid
 			JOptionPane.showMessageDialog(null, "Invalid Customer Number","Error",JOptionPane.ERROR_MESSAGE);
 			output = receiveTransaction(data);
 			return output;
 		}
-		Customer currentCust = data[check-1];
+		Customer currentCust = data[check-1];			// Locate customer data
 		String trans = new String(JOptionPane.showInputDialog("Input Transaction Type\n(uppercase only please)"));
-		if(trans.indexOf("T") != -1){
+		if(trans.indexOf("T") != -1 && trans.length() == 1){									// Transfer case
 			String amt = new String(JOptionPane.showInputDialog("Input Amount"));
 			String from = new String(JOptionPane.showInputDialog("Input Account to Transfer From (C,S,A,L)"));
 			String to = new String(JOptionPane.showInputDialog("Input Account to Transfer To (C,S,A,L)"));
 			return transfer(currentCust, amt, from, to);
-		}else if(trans.indexOf("W") != -1){
+		}else if(trans.indexOf("W") != -1 && trans.length() == 1){								// Withdraw case
 			String amt = new String(JOptionPane.showInputDialog("Input Amount"));
 			String acct = new String(JOptionPane.showInputDialog("Input Account (C,S,A,L)"));
 			return withdraw(currentCust, amt, acct);
-		}else if(trans.indexOf("D") != -1){
+		}else if(trans.indexOf("D") != -1 && trans.length() == 1){								// Deposit case
 			String amt = new String(JOptionPane.showInputDialog("Input Amount"));
 			String acct = new String(JOptionPane.showInputDialog("Input Account (C,S,A,L)"));
 			return deposit(currentCust, amt, acct);
-		}else if(trans.indexOf("I") != -1){
+		}else if(trans.indexOf("I") != -1 && trans.length() == 1){								// Interest case
 			String acct = new String(JOptionPane.showInputDialog("Input Account (C,S,A,L)"));
 			return interest(currentCust, acct);
-		}else if(trans.indexOf("G") != -1){
+		}else if(trans.indexOf("G") != -1 && trans.length() == 1){								// Summary Case
 			String acct = new String(JOptionPane.showInputDialog("Input Account (C,S,A,L)"));
 			return summarize(currentCust, acct);
-		}else{
+		}else{															// Handle invalid transaction type
 			JOptionPane.showMessageDialog(null, "Invalid Transaction Type","Error",JOptionPane.ERROR_MESSAGE);
 			output = receiveTransaction(data);
 			}
@@ -72,37 +82,30 @@ public class Driver {
 	}
 	
 	/**
-	 * 
+	 * This method is to be called right before the program terminates. It 
+	 * gathers data from all customers ands then displays it in a dialog box.
+	 * @param db
 	 */
 	public static void displaySummaries(Customer[] db){
-			String person1 = new String(db[0].getName());
-			int custNum1 = db[0].getNumber();
-			double cBalance1 = db[0].locateAccount("C").getBalance();
-			double sBalance1 = db[0].locateAccount("S").getBalance();
-			double aBalance1 = db[0].locateAccount("A").getBalance();
-			double lBalance1 = db[0].locateAccount("L").getBalance();
-			String person2 = new String(db[1].getName());
-			int custNum2 = db[1].getNumber();
-			double cBalance2 = db[1].locateAccount("C").getBalance();
-			double sBalance2 = db[1].locateAccount("S").getBalance();
-			double aBalance2 = db[1].locateAccount("A").getBalance();
-			double lBalance2 = db[1].locateAccount("L").getBalance();
-			JOptionPane.showMessageDialog(null, "Customer: " + person1 + "\n"+
-												"ID Number: " + custNum1 + "\n"+
-												"Checking: " + cBalance1 + "\n"+
-												"Savings: " + sBalance1 + "\n"+
-												"Auto: " + aBalance1 + "\n"+
-												"Loan: " + lBalance1 + "\n\n\n"+
-												"Customer: " + person2 + "\n"+
-												"ID Number: " + custNum2 + "\n"+
-												"Checking: " + cBalance2 + "\n"+
-												"Savings: " + sBalance2 + "\n"+
-												"Auto: " + aBalance2 + "\n"+
-												"Loan: " + lBalance2 + "\n\n\n", "Customer Summaries", JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Customer: " + db[0].getName() + "\n"+
+												"Address: " + db[0].getAddress() + "\n"+
+												"ID Number: " + db[0].getNumber() + "\n"+
+												"Checking: " + db[0].locateAccount("C").getBalance() + "\n"+
+												"Savings: " + db[0].locateAccount("S").getBalance() + "\n"+
+												"Auto: " + db[0].locateAccount("A").getBalance() + "\n"+
+												"Loan: " + db[0].locateAccount("L").getBalance() + "\n\n\n"+
+												"Customer: " + db[1].getName() + "\n"+
+												"Address: " + db[1].getAddress() + "\n"+
+												"ID Number: " + db[1].getNumber() + "\n"+
+												"Checking: " + db[1].locateAccount("C").getBalance() + "\n"+
+												"Savings: " + db[1].locateAccount("S").getBalance() + "\n"+
+												"Auto: " + db[1].locateAccount("A").getBalance() + "\n"+
+												"Loan: " + db[1].locateAccount("L").getBalance() + "\n", "Customer Summaries", JOptionPane.PLAIN_MESSAGE);
 	}
 	
 	/**
-	 * 
+	 * Locates and returns the BankAccount of a particular type (C, S, A, L) for the
+	 * customer given.
 	 * @param person
 	 * @param accType
 	 * @return
@@ -138,7 +141,8 @@ public class Driver {
 	}
 	
 	/**
-	 * 
+	 * Initializes the customer database with the 2 necessary entries. Initializes all
+	 * vital data as well as each persons 4 accounts.
 	 * @param custDB
 	 */
 	public static void customerInit(Customer[] custDB){

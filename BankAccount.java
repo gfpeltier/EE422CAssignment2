@@ -6,6 +6,7 @@ package assignment2;
  * life of a specific bank account.
  * 
  * @author ee322c teaching team
+ * @edited by Grant Peltier & John Nelson
  */
 class BankAccount 
 {   
@@ -33,6 +34,9 @@ class BankAccount
 
     
 //constructors
+    /**
+     * Default constructor
+     */
     public BankAccount(){
     	balance = 0;
     	accountType = null;
@@ -140,6 +144,10 @@ class BankAccount
         ownersName = newOwner;
     }
     
+    /**
+     * Used to figure out the type of account
+     * @return String version of character account ID
+     */
     public String getType(){
     	return accountType;
     }
