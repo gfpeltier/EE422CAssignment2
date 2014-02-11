@@ -75,7 +75,30 @@ public class Driver {
 	 * 
 	 */
 	public static void displaySummaries(Customer[] db){
-		
+			String person1 = new String(db[0].getName());
+			int custNum1 = db[0].getNumber();
+			double cBalance1 = db[0].locateAccount("C").getBalance();
+			double sBalance1 = db[0].locateAccount("S").getBalance();
+			double aBalance1 = db[0].locateAccount("A").getBalance();
+			double lBalance1 = db[0].locateAccount("L").getBalance();
+			String person2 = new String(db[1].getName());
+			int custNum2 = db[1].getNumber();
+			double cBalance2 = db[1].locateAccount("C").getBalance();
+			double sBalance2 = db[1].locateAccount("S").getBalance();
+			double aBalance2 = db[1].locateAccount("A").getBalance();
+			double lBalance2 = db[1].locateAccount("L").getBalance();
+			JOptionPane.showMessageDialog(null, "Customer: " + person1 + "\n"+
+												"ID Number: " + custNum1 + "\n"+
+												"Checking: " + cBalance1 + "\n"+
+												"Savings: " + sBalance1 + "\n"+
+												"Auto: " + aBalance1 + "\n"+
+												"Loan: " + lBalance1 + "\n\n\n"+
+												"Customer: " + person2 + "\n"+
+												"ID Number: " + custNum2 + "\n"+
+												"Checking: " + cBalance2 + "\n"+
+												"Savings: " + sBalance2 + "\n"+
+												"Auto: " + aBalance2 + "\n"+
+												"Loan: " + lBalance2 + "\n\n\n", "Customer Summaries", JOptionPane.PLAIN_MESSAGE);
 	}
 	
 	/**
