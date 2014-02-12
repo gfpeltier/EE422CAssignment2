@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
  *
  */
 public class Driver {
-	
+
 	public final static int NUMCUST = 2;		// Number of customers in database
 	public final static int TRANSTYPE = 2;		// Offset in input string for type of transaction (T, W, D, I, G)
 	public final static int CUSTOFF = 0;		// Offset for customer ID number in input string
@@ -35,7 +35,7 @@ public class Driver {
 		}
 		displaySummaries(custDB);
 	}
-	
+
 	/**
 	 * Primary data gathering method of program. Gathers transaction input in separate chunks
 	 * and passes along vital data to respective transaction methods. Also checks and 
@@ -43,17 +43,22 @@ public class Driver {
 	 * @param data
 	 * @return message to be put out by the transaction that was completed
 	 */
-	
+
 	public static String receiveTransaction(Customer[] data){
 		String output = new String();
 		String custNum = new String(JOptionPane.showInputDialog("Input Customer Number"));
+		if(custNum.isEmpty()){
+			JOptionPane.showMessageDialog(null, "Invalid Customer Number","Error",JOptionPane.ERROR_MESSAGE);
+			output = receiveTransaction(data);
+			return output;
+		}
 		if(custNum.charAt(0) < '1' || custNum.charAt(0) > '9'){
 			JOptionPane.showMessageDialog(null, "Invalid Customer Number","Error",JOptionPane.ERROR_MESSAGE);
 			output = receiveTransaction(data);
 			return output;
 		}
 		int check = Integer.parseInt(custNum);
-		if(check < 0 || check > NUMCUST){				// Check that customer number is valid
+		if(check <= 0 || check > NUMCUST){				// Check that customer number is valid
 			JOptionPane.showMessageDialog(null, "Invalid Customer Number","Error",JOptionPane.ERROR_MESSAGE);
 			output = receiveTransaction(data);
 			return output;
@@ -85,7 +90,7 @@ public class Driver {
 			}
 		return output;
 	}
-	
+
 	/**
 	 * This method is to be called right before the program terminates. It 
 	 * gathers data from all customers ands then displays it in a dialog box.
@@ -107,7 +112,7 @@ public class Driver {
 												"Auto: " + db[1].locateAccount("A").getBalance() + "\n"+
 												"Loan: " + db[1].locateAccount("L").getBalance() + "\n", "Customer Summaries", JOptionPane.PLAIN_MESSAGE);
 	}
-	
+
 	/**
 	 * Locates and returns the BankAccount of a particular type (C, S, A, L) for the
 	 * customer given.
@@ -118,33 +123,130 @@ public class Driver {
 	public static BankAccount getAccount(Customer person, String accType){
 		return person.locateAccount(accType);
 	}
-	
+
 	//TODO: independent methods for every transaction
 	public static String transfer(Customer person, String amt, String from, String to){
 		String output = new String();
+		BankAccount fromAccount = person.locateAccount(from);
+		BankAccount toAccount = person.locateAccount(from);
+		String fromType = null;
+		String toType = null;
+		if(fromAccount.getType() == "S"){fromType = "primary savings";}
+		if(fromAccount.getType() == "C"){fromType = "checking";}
+		if(fromAccount.getType() == "A"){fromType = "auto loan savings";}
+		if(fromAccount.getType() == "L"){fromType = "student loan savings";}
+		if(toAccount.getType() == "S"){toType = "primary savings";}
+		if(toAccount.getType() == "C"){toType = "checking";}
+		if(toAccount.getType() == "A"){toType = "auto loan savings";}
+		if(toAccount.getType() == "L"){toType = "student loan savings";}
+		double Amount = Double.parseDouble(amt);
+		if(person.locateAccount(from).getBalance() < Amount){//case where "from" account has insufficient funds
+			output = "ERROR: " + person.getName() + "'s" + fromType + " account has insufficient funds to complete the transfer of "
+					 + amt + " to their" + toType + " account." ;
+			return output;
+		}
+		else{//case where transfer is successful
+			double fromInitial = person.locateAccount(from).getBalance();
+			double toInitial = person.locateAccount(to).getBalance();
+			person.locateAccount(from).withdraw(Amount);
+			person.locateAccount(to).deposit(Amount);
+			output = "Transfer from" + person.getName() + "'s " + fromType + " to their " + toType + "account:" +
+					 "\n\ninitial " + fromType + " balance: " + fromInitial + 
+					 "\ninitial " + toType + "balance: " + toInitial +
+					 "\n\n" + Amount + " transferred from " + person.getName() + "'s " + fromType + " to their " + toType +
+					 "\n\nfinal " + fromType + " balance: " + person.locateAccount(from).getBalance() +
+					 "\nfinal " + toType + " balance: " + person.locateAccount(to).getBalance();
+		}
 		return output;
 	}
-	
+
 	public static String deposit(Customer person, String amt, String acct){
 		String output = new String();
+		double Initial = person.locateAccount(acct).getBalance();
+		double Amount = Double.parseDouble(amt);
+		person.locateAccount(acct).deposit(Amount);
+		String Type = "";
+		BankAccount Account = person.locateAccount(acct);
+		if(Account.getType() == "S"){Type = "primary savings";}
+		if(Account.getType() == "C"){Type = "checking";}
+		if(Account.getType() == "A"){Type = "auto loan savings";}
+		if(Account.getType() == "L"){Type = "student loan savings";}
+		output = "Deposit to " + person.getName() + "'s " + Type + " account:\n" + "balance before adding deposit: "
+				 + Initial + "\namount deposited: " + amt + "\ncurrent balance after deposit:" + person.locateAccount(acct).getBalance();
 		return output;
 	}
-	
+
 	public static String withdraw(Customer person, String amt, String acct){
 		String output = new String();
+		BankAccount Account = person.locateAccount(acct);
+		String Type = null;
+		if(Account.getType() == "C"){
+			Type = "checking";
+			if(Double.parseDouble(amt) > person.locateAccount(acct).getBalance()){//case for savings account covering checking
+				if(person.locateAccount("S").getBalance() + person.locateAccount(acct).getBalance() + 20 > Double.parseDouble(amt)){
+					double initialChecking = person.locateAccount("C").getBalance();
+					double initialSavings = person.locateAccount("S").getBalance();
+					double overflow = Double.parseDouble(amt) + 20 - person.locateAccount("C").getBalance();
+					person.locateAccount("C").setBalance(0);
+					person.locateAccount("S").withdraw(overflow);
+					output = person.getName() + "'s checking account has inssuficient funds to complete the whole withdrawal.\nThe remainding amount was withdrawn from their primary savings account."
+							 + "\ninitial checking account balance: " + initialChecking + "\nfinal checking account balance: " + person.locateAccount("C").getBalance() + "\ninitial primary savings account balance: " +
+							 initialSavings + "\nfinal primary savings account balance: " + person.locateAccount("S").getBalance() + "\n\namount withdrawn: " + amt;
+					return output;
+				}
+				else{//case where checking AND savings have insufficient funds
+					output = "ERROR: " + person.getName() + "'s savings account has insufficient funds to cover the overdraw of their checking account.";
+					return output;
+				}
+			}
+		}
+		if(Account.getType() == "S"){Type = "primary savings";}
+		if(Account.getType() == "A"){Type = "auto loan savings";}
+		if(Account.getType() == "L"){Type = "student loan savings";}
+		if(Double.parseDouble(amt) > person.locateAccount(acct).getBalance()){//case where funds are insufficient
+			output = "Error, " + person.getName() + "'s " + Type + " account has insufficient funds to complete the withdrawal.";
+			return output;
+		}
+		else{//successful withdrawal
+			double Initial = person.locateAccount(acct).getBalance();
+			person.locateAccount(acct).withdraw(Double.parseDouble(amt));
+			double Final = person.locateAccount(acct).getBalance();
+			output = "Withdrawal from:" + person.getName() + "'s " + Type + " account:\n" + "initial amount: "
+			+ Initial + "\namount withdrawn: " + amt + "\nfinal amount: " + Final;
+		}
 		return output;
 	}
-	
+
 	public static String interest(Customer person, String acct){
 		String output = new String();
+		if(person.locateAccount(acct).getType() != "S"){
+			output = "ERROR: Interest only applies to savings accounts.";
+			return output;
+		}
+		if(person.locateAccount(acct).getBalance() < 1000.00){
+			output = "ERROR: Interest only applies to savings accounts with balances greater than $1000.00.";
+			return output;
+		}
+		double Initial = person.locateAccount(acct).getBalance();
+		double Interest = person.locateAccount(acct).getBalance() * .04;
+		person.locateAccount(acct).deposit(Interest);
+		output = "Interest computed and added for: " + person.getName() + "'s savings account\n" + "balance before computing interest adding interest: "
+				 + Initial + "\ninterest added: " + Interest + "\ncurrent balance after computing and adding interest: " + person.locateAccount(acct).getBalance();
 		return output;
 	}
-	
+
 	public static String summarize(Customer person, String acct){
 		String output = new String();
+		BankAccount Account = person.locateAccount(acct);
+		String Type = null;
+		if(Account.getType() == "S"){Type = "primary savings";}
+		if(Account.getType() == "C"){Type = "checking";}
+		if(Account.getType() == "A"){Type = "auto loan savings";}
+		if(Account.getType() == "L"){Type = "student loan savings";}
+		output = "The Balance of " + person.getName() + "'s " + Type + " account is " + Account.getBalance() + ".";
 		return output;
 	}
-	
+
 	/**
 	 * Initializes the customer database with the 2 necessary entries. Initializes all
 	 * vital data as well as each persons 4 accounts.
@@ -154,7 +256,7 @@ public class Driver {
 		BankAccount[] custAccounts1 = new BankAccount[4];
 		BankAccount[] custAccounts2 = new BankAccount[4];
 		custDB[0] = new Customer("Grant Peltier", 1, "3108 Glenmere Court", null);
-		custDB[1] = new Customer("John Nelson", 2, "1234 That Street", null);
+		custDB[1] = new Customer("John Nelson", 2, "5315 Duval Street", null);
 		custAccounts1[0] = new BankAccount(1, custDB[0], 0.00, "C");
 		custAccounts1[1] = new BankAccount(2, custDB[0], 0.00, "S");
 		custAccounts1[2] = new BankAccount(3, custDB[0], 0.00, "L");
