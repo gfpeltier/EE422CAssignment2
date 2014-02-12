@@ -1,3 +1,9 @@
+/**
+ * @author Grant Peltier & John Nelson
+ * EID:gfp237,jkn387
+ * EE422C-Assignment 2
+ */
+
 package assignment2;
 
 
