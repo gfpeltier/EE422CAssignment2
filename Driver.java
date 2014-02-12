@@ -69,37 +69,47 @@ public class Driver {
 		String trans = new String(JOptionPane.showInputDialog("Input Transaction Type\n(uppercase only please)"));
 		if(trans.indexOf("T") != -1 && trans.length() == 1){									// Transfer case
 			String amt = new String(JOptionPane.showInputDialog("Input Amount"));
-			if(Double.parseDouble(amt) < 0){
-				return inputAmountError(data);
-			}
+			if(Double.parseDouble(amt) < 0){return inputAmountError(data);}
 			String from = new String(JOptionPane.showInputDialog("Input Account to Transfer From (C,S,A,L)"));
+			if(from.charAt(0) != 'C' && from.charAt(0) != 'S' && from.charAt(0) != 'A' && from.charAt(0) != 'L'){return inputAcctTypeError(data);}
 			String to = new String(JOptionPane.showInputDialog("Input Account to Transfer To (C,S,A,L)"));
+			if(to.charAt(0) != 'C' && to.charAt(0) != 'S' && to.charAt(0) != 'A' && to.charAt(0) != 'L'){return inputAcctTypeError(data);}
 			return transfer(currentCust, amt, from, to);
 		}else if(trans.indexOf("W") != -1 && trans.length() == 1){								// Withdraw case
 			String amt = new String(JOptionPane.showInputDialog("Input Amount"));
-			if(Double.parseDouble(amt) < 0){
-				return inputAmountError(data);
-			}
+			if(Double.parseDouble(amt) < 0){return inputAmountError(data);}
 			String acct = new String(JOptionPane.showInputDialog("Input Account (C,S,A,L)"));
+			if(acct.charAt(0) != 'C' && acct.charAt(0) != 'S' && acct.charAt(0) != 'A' && acct.charAt(0) != 'L'){return inputAcctTypeError(data);}
 			return withdraw(currentCust, amt, acct);
 		}else if(trans.indexOf("D") != -1 && trans.length() == 1){								// Deposit case
 			String amt = new String(JOptionPane.showInputDialog("Input Amount"));
-			if(Double.parseDouble(amt) < 0){
-				return inputAmountError(data);
-			}
+			if(Double.parseDouble(amt) < 0){return inputAmountError(data);}
 			String acct = new String(JOptionPane.showInputDialog("Input Account (C,S,A,L)"));
+			if(acct.charAt(0) != 'C' && acct.charAt(0) != 'S' && acct.charAt(0) != 'A' && acct.charAt(0) != 'L'){return inputAcctTypeError(data);}
 			return deposit(currentCust, amt, acct);
 		}else if(trans.indexOf("I") != -1 && trans.length() == 1){								// Interest case
 			String acct = new String(JOptionPane.showInputDialog("Input Account (C,S,A,L)"));
+			if(acct.charAt(0) != 'C' && acct.charAt(0) != 'S' && acct.charAt(0) != 'A' && acct.charAt(0) != 'L'){return inputAcctTypeError(data);}
 			return interest(currentCust, acct);
 		}else if(trans.indexOf("G") != -1 && trans.length() == 1){								// Summary Case
 			String acct = new String(JOptionPane.showInputDialog("Input Account (C,S,A,L)"));
+			if(acct.charAt(0) != 'C' && acct.charAt(0) != 'S' && acct.charAt(0) != 'A' && acct.charAt(0) != 'L'){return inputAcctTypeError(data);}
 			return summarize(currentCust, acct);
 		}else{															// Handle invalid transaction type
 			JOptionPane.showMessageDialog(null, "Invalid Transaction Type","Error",JOptionPane.ERROR_MESSAGE);
 			output = receiveTransaction(data);
 			}
 		return output;
+	}
+	
+	/**
+	 * Handles error when input of account type is not S, C, A, or L
+	 * @param data
+	 * @return output string from appropriate transaction
+	 */
+	public static String inputAcctTypeError(Customer[] data){
+		JOptionPane.showMessageDialog(null, "Invalid Account Type","Error",JOptionPane.ERROR_MESSAGE);
+		return receiveTransaction(data);
 	}
 	
 	/**
